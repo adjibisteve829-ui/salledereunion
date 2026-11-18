@@ -124,8 +124,8 @@ Déployez `target\salledereunion.war` dans le dossier `standalone\deployments` d
 Copy-Item target\salledereunion.war "C:\chemin\vers\wildfly\standalone\deployments\"
 ```
 
-Ouvrez `http://localhost:8080/salledereunion/` ou
-`http://localhost:8080/salledereunion/login`. Consultez `wildfly\standalone\log\server.log`
+Ouvrez `http://localhost:8080/` ou `http://localhost:8080/login`.
+Consultez `wildfly\standalone\log\server.log`
 pour vérifier le déploiement et diagnostiquer les erreurs.
 
 ### Déploiement d'essai sur Render
