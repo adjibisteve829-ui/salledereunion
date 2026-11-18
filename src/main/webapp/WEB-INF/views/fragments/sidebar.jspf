@@ -1,0 +1,69 @@
+<%@ page pageEncoding="UTF-8" %>
+<button class="sidebar-toggle" type="button" aria-controls="main-sidebar" aria-expanded="false" aria-label="Ouvrir le menu">☰</button>
+<aside class="sidebar" id="main-sidebar" aria-hidden="false">
+    <a class="brand" href="<%= request.getContextPath() %>/dashboard">Salle<span>Reunion</span></a>
+    <div class="sidebar-caption">ESPACE DE TRAVAIL</div>
+    <nav class="side-nav" aria-label="Navigation principale">
+        <a href="<%= request.getContextPath() %>/dashboard">Dashboard</a>
+        <a href="<%= request.getContextPath() %>/salles">Salles</a>
+        <% bj.salledereunion.model.Utilisateur navUser =
+                (bj.salledereunion.model.Utilisateur) session.getAttribute("utilisateur");
+           if (navUser != null && navUser.estAdministrateur()) { %>
+            <a href="<%= request.getContextPath() %>/admin#reservations">Réservations clients</a>
+            <a href="<%= request.getContextPath() %>/parametres">Mon profil</a>
+            <a href="<%= request.getContextPath() %>/admin">Administration</a>
+        <% } else { %>
+            <a href="<%= request.getContextPath() %>/reservations">Réservations</a>
+            <a href="<%= request.getContextPath() %>/parametres">Paramètres</a>
+        <% } %>
+    </nav>
+    <form class="logout-form" action="<%= request.getContextPath() %>/logout" method="post">
+        <button class="nav-logout" type="submit">Déconnexion</button>
+    </form>
+</aside>
+<button class="sidebar-backdrop" type="button" aria-label="Fermer le menu" hidden></button>
+<script>
+    (() => {
+        const toggle = document.querySelector(".sidebar-toggle");
+        const sidebar = document.getElementById("main-sidebar");
+        const backdrop = document.querySelector(".sidebar-backdrop");
+        const mobileMenu = window.matchMedia("(max-width: 650px)");
+        let isOpen = false;
+
+        const updateMenu = () => {
+            const isMobile = mobileMenu.matches;
+            document.body.classList.toggle("sidebar-open", isMobile && isOpen);
+            toggle.setAttribute("aria-expanded", String(isMobile && isOpen));
+            toggle.setAttribute("aria-label", isMobile && isOpen ? "Fermer le menu" : "Ouvrir le menu");
+            toggle.textContent = isMobile && isOpen ? "×" : "☰";
+            sidebar.setAttribute("aria-hidden", String(isMobile && !isOpen));
+            backdrop.hidden = !isMobile || !isOpen;
+        };
+
+        toggle.addEventListener("click", () => {
+            isOpen = !isOpen;
+            updateMenu();
+        });
+        backdrop.addEventListener("click", () => {
+            isOpen = false;
+            updateMenu();
+            toggle.focus();
+        });
+        sidebar.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+            isOpen = false;
+            updateMenu();
+        }));
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && isOpen) {
+                isOpen = false;
+                updateMenu();
+                toggle.focus();
+            }
+        });
+        mobileMenu.addEventListener("change", () => {
+            isOpen = false;
+            updateMenu();
+        });
+        updateMenu();
+    })();
+</script>
