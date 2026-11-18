@@ -202,7 +202,7 @@ td { font-size: 12px; }
 .login-page {
     align-items: center;
     background:
-        linear-gradient(135deg, rgba(24, 59, 143, .82), rgba(65, 105, 216, .76) 52%, rgba(120, 135, 242, .70)),
+        linear-gradient(90deg, rgba(24, 59, 143, .88) 0%, rgba(65, 105, 216, .62) 35%, rgba(65, 105, 216, .12) 58%, rgba(65, 105, 216, 0) 70%),
         url("https://images.pexels.com/photos/260689/pexels-photo-260689.jpeg?auto=compress&cs=tinysrgb&w=1920");
     background-position: center;
     background-size: cover;
