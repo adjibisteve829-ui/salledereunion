@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: salledereunion
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /salledereunion/login
+    autoDeployTrigger: commit
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: salledereunion-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: salledereunion-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: salledereunion-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: salledereunion-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: salledereunion-db
+          property: password
+
+databases:
+  - name: salledereunion-db
+    databaseName: salledereunion
+    user: salledereunion
+    plan: free
+    region: frankfurt

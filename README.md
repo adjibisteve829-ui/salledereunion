@@ -128,6 +128,41 @@ Ouvrez `http://localhost:8080/salledereunion/` ou
 `http://localhost:8080/salledereunion/login`. Consultez `wildfly\standalone\log\server.log`
 pour vérifier le déploiement et diagnostiquer les erreurs.
 
+### Déploiement d'essai sur Render
+
+Le fichier `render.yaml` décrit un service web Docker et une base PostgreSQL gratuits dans la
+région de Francfort. Le `Dockerfile` compile le WAR avec Java 17 et l'exécute sur WildFly.
+Poussez ces fichiers dans le dépôt GitHub, puis créez une ressource **Blueprint** sur Render
+et sélectionnez ce dépôt. Render créera les deux ressources et fournira les paramètres PostgreSQL
+au service via des variables d'environnement ; aucun mot de passe n'est stocké dans le dépôt.
+
+Le service web gratuit s'endort après 15 minutes sans trafic et peut mettre environ une minute
+à redémarrer. La base gratuite est limitée à 1 Go et expire après 30 jours ; elle convient
+uniquement à un essai. Exportez les données avant l'expiration ou passez la base à un plan payant
+si elles doivent rester disponibles.
+
+#### Migrer les données PostgreSQL locales
+
+Avant le premier déploiement, créez un export complet de la base locale dans PowerShell :
+
+```powershell
+pg_dump --format=custom --host localhost --port 5432 --username postgres `
+    --dbname salledereunion --file "$env:TEMP\salledereunion.dump"
+```
+
+Une fois la base Render créée, récupérez son **External Database URL** dans **Connect**. Utilisez
+cette URL externe depuis votre ordinateur pour restaurer l'export dans la base Render encore vide :
+
+```powershell
+$env:RENDER_DATABASE_URL = Read-Host "URL externe de PostgreSQL Render"
+pg_restore --no-owner --no-acl --dbname="$env:RENDER_DATABASE_URL" `
+    "$env:TEMP\salledereunion.dump"
+Remove-Item Env:\RENDER_DATABASE_URL
+```
+
+L'URL contient un secret : ne la commitez pas et ne la partagez pas. Conservez l'export local
+jusqu'à ce que l'application et les données restaurées soient vérifiées.
+
 ### WildFly affiche « Le service d'authentification est temporairement indisponible »
 
 L'application utilise JAAS (`LoginContext` et `UtilisateurLoginModule`) ; le module vérifie
